@@ -1,6 +1,5 @@
 import math
 import json
-import pprint
 import os
 from os.path import exists
 
@@ -184,9 +183,7 @@ def clear_terminal():
         os.system('clear')
 
 
-r = recommend()
-
-
+# Calculate the Mean Absolute Error(MAE) and Root Mean Squared Error(RMSE)
 def get_the_mae_rmse():
     print("Calculating mean absolute error and root mean squared error...")
 
@@ -199,24 +196,30 @@ def get_the_mae_rmse():
             if column['user_rating'] is None:
                 continue
 
-            mae = math.fabs(column['user_rating'] - column['prediction'])
-            rmse = mae ** 2
+            common = abs(column['user_rating'] - column['prediction'])
+            mae += common
+            rmse += common ** 2
             count += 1
 
     clear_terminal()
 
-    return mae, rmse
+    return mae / count, rmse / count
 
 
+r = recommend()
 mae, rmse = get_the_mae_rmse()
 
 while True:
-    uid = int(input("Give the user id to see recommendations: "))
-    clear_terminal()
+    try:
+        uid = int(input("Give the user id to see recommendations: "))
+        clear_terminal()
 
-    recommended = r[uid]
+        recommended = r[uid]
 
-    for i, item in enumerate(recommended):
-        print(f"{i + 1}. {item[1]}, prediction: {item[2]}")
+        for i, item in enumerate(recommended):
+            print(f"{i + 1}. {item[1]}, prediction: {item[2]:.1f}")
 
-    print(f"Accuracy of Mean Absolute Error: {mae:.2f}, Root Mean Squared Error: {rmse:.2f}")
+        print(
+            f"\033[31mAccuracy prediction based on of Mean Absolute Error: {mae:.2f}, Root Mean Squared Error: {rmse:.2f}\033[0m")
+    except KeyError:
+        print("Invalid user id")
