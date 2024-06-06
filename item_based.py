@@ -186,11 +186,37 @@ def clear_terminal():
 
 r = recommend()
 
+
+def get_the_mae_rmse():
+    print("Calculating mean absolute error and root mean squared error...")
+
+    mae = 0
+    rmse = 0
+    count = 0
+
+    for row in users_ratings:
+        for column in row[1:]:
+            if column['user_rating'] is None:
+                continue
+
+            mae = math.fabs(column['user_rating'] - column['prediction'])
+            rmse = mae ** 2
+            count += 1
+
+    clear_terminal()
+
+    return mae, rmse
+
+
+mae, rmse = get_the_mae_rmse()
+
 while True:
     uid = int(input("Give the user id to see recommendations: "))
     clear_terminal()
 
-    recommendations = r[uid]
+    recommended = r[uid]
 
-    for i, item in enumerate(recommendations):
+    for i, item in enumerate(recommended):
         print(f"{i + 1}. {item[1]}, prediction: {item[2]}")
+
+    print(f"Accuracy of Mean Absolute Error: {mae:.2f}, Root Mean Squared Error: {rmse:.2f}")
